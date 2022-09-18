@@ -95,10 +95,7 @@ export class MountingHud {
         // If dismount succeeded, then update the hud.
         if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') == undefined) {
           MountingHud.removeSlash(button);
-          tooltip = MountingHud.createTooltip(
-            riderToken?.name ?? '<undefined>',
-            mountToken?.name ?? '<undefined>'
-          );
+          tooltip = MountingHud.createTooltip(riderToken?.name ?? '<undefined>', mountToken?.name ?? '<undefined>');
           MountingHud.setTooltip(button, tooltip);
         }
       } else {
