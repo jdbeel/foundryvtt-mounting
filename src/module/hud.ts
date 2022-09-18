@@ -1,6 +1,7 @@
 import { Mounting } from './mounting.js';
 import { getCanvas, getToken } from './utils.js';
 
+// Temporary shim
 type hudToken = {
   _id: string;
 };
@@ -20,7 +21,7 @@ export class MountingHud {
 
   static createMountButton(tooltip: string): JQuery {
     const button = $(
-      `<div class="control-icon mounting fa-stack" title="${tooltip}">
+      `<div class="control-icon ${Mounting.ID} fa-stack" title="${tooltip}">
         <i class="fas fa-horse fa-stack-1x"></i>
         <i class="fas fa-slash fa-stack-1x" style="position: absolute; color: tomato;"></i>
       </div>`,
