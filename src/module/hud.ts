@@ -65,13 +65,13 @@ export class MountingHud {
       riderToken = selectedToken;
       mountToken = getToken(
         // @ts-ignore
-        selectedToken?.document.getFlag('foundryvtt-mounting', 'mount_id'),
+        selectedToken?.document.getFlag(Mounting.ID, 'mount_id'),
       );
       mounted = true;
     } else if (hasProperty(selectedToken?.document, 'flags.foundryvtt-mounting.rider_id')) {
       riderToken = getToken(
         // @ts-ignore
-        selectedToken?.document.getFlag('foundryvtt-mounting', 'rider_id'),
+        selectedToken?.document.getFlag(Mounting.ID, 'rider_id'),
       );
       mountToken = selectedToken;
       mounted = true;
@@ -89,7 +89,7 @@ export class MountingHud {
     }
 
     button.find('i').on('click', async function (event) {
-      if (riderToken?.document.getFlag('foundryvtt-mounting', 'mount_id') != undefined) {
+      if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') != undefined) {
         await Mounting.unmount(riderToken);
         MountingHud.removeSlash(button);
         tooltip = MountingHud.createTooltip(riderToken?.name ?? '<undefined>', mountToken?.name ?? '<undefined>');

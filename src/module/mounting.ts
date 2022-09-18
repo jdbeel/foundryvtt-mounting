@@ -35,18 +35,16 @@ export class Mounting {
     // Shim is used while we wait for the types to be updated.
     const riderTokenDocument = riderToken.document as ShimTokenDocument;
     const mountTokenDocument = mountToken.document as ShimTokenDocument;
-    await riderTokenDocument.setFlag('foundryvtt-mounting', 'mount_id', mountToken.id);
-    await mountTokenDocument.setFlag('foundryvtt-mounting', 'rider_id', riderToken.id);
-    riderTokenDocument.update({ name: riderTokenDocument.name + ' | ' + mountTokenDocument.name.slice(0, 8) + '...' });
-    mountTokenDocument.update({ name: mountTokenDocument.name + ' | ' + riderTokenDocument.name.slice(0, 8) + '...' });
+    await riderTokenDocument.setFlag(this.ID, 'mount_id', mountToken.id);
+    await mountTokenDocument.setFlag(this.ID, 'rider_id', riderToken.id);
 
     // This currently is detected as an error, but will stop doing so when the
     // foundryvtttypes module is updated.
-    await riderToken.document.update({
+    await mountToken.document.update({
       // @ts-ignore
-      x: mountToken.document.x,
+      x: riderToken.document.x,
       // @ts-ignore
-      y: mountToken.document.y,
+      y: riderToken.document.y,
     });
 
     // @ts-ignore
@@ -60,7 +58,7 @@ export class Mounting {
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log('foundryvtt-mounting | ' + `${riderToken.document.name} mounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ${riderToken.document.name} mounts ${mountToken?.document.name}.`);
   }
 
   static async unmount(riderToken: Token | undefined) {
@@ -69,7 +67,7 @@ export class Mounting {
       return;
     }
 
-    const mount_id = riderToken.document.getFlag('foundryvtt-mounting', 'mount_id') as string;
+    const mount_id = riderToken.document.getFlag(this.ID, 'mount_id') as string;
     const mountToken = getToken(mount_id);
     if (mountToken == undefined) {
       ui?.notifications?.error('Mount token is undefined.');
@@ -78,13 +76,11 @@ export class Mounting {
 
     const riderTokenDocument = riderToken.document as ShimTokenDocument;
     const mountTokenDocument = mountToken.document as ShimTokenDocument;
-    await riderTokenDocument.unsetFlag('foundryvtt-mounting', 'mount_id');
-    await mountTokenDocument.unsetFlag('foundryvtt-mounting', 'rider_id');
-    riderTokenDocument.update({ name: riderTokenDocument.name.slice(0, riderTokenDocument.name.indexOf('|') - 1) });
-    mountTokenDocument.update({ name: mountTokenDocument.name.slice(0, mountTokenDocument.name.indexOf('|') - 1) });
+    await riderTokenDocument.unsetFlag(this.ID, 'mount_id');
+    await mountTokenDocument.unsetFlag(this.ID, 'rider_id');
 
     // @ts-ignore
-    await window['tokenAttacher'].detachAllElementsFromToken(riderToken, true);
+    await window['tokenAttacher'].detachElementFromToken(mountToken, riderToken, true);
 
     const chatData: ChatMessageDataConstructorData = {
       type: 4,
@@ -94,6 +90,6 @@ export class Mounting {
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log('foundryvtt-mounting | ' + `${riderToken.document.name} dismounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ${riderToken.document.name} dismounts ${mountToken?.document.name}.`);
   }
 }
