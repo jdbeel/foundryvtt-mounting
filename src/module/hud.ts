@@ -90,19 +90,30 @@ export class MountingHud {
 
     button.find('i').on('click', async function (event) {
       if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') != undefined) {
+        // Attempt to dismount...
         await Mounting.unmount(riderToken);
-        MountingHud.removeSlash(button);
-        tooltip = MountingHud.createTooltip(riderToken?.name ?? '<undefined>', mountToken?.name ?? '<undefined>');
-        MountingHud.setTooltip(button, tooltip);
+        // If dismount succeeded, then update the hud.
+        if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') == undefined) {
+          MountingHud.removeSlash(button);
+          tooltip = MountingHud.createTooltip(
+            riderToken?.name ?? '<undefined>',
+            mountToken?.name ?? '<undefined>'
+          );
+          MountingHud.setTooltip(button, tooltip);
+        }
       } else {
+        // Attempt to mount...
         await Mounting.mount(riderToken);
-        MountingHud.addSlash(button);
-        tooltip = MountingHud.createTooltip(
-          riderToken?.name ?? '<undefined>',
-          mountToken?.name ?? '<undefined>',
-          false,
-        );
-        MountingHud.setTooltip(button, tooltip);
+        // If mount succeeded, then update the hud.
+        if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') != undefined) {
+          MountingHud.addSlash(button);
+          tooltip = MountingHud.createTooltip(
+            riderToken?.name ?? '<undefined>',
+            mountToken?.name ?? '<undefined>',
+            false,
+          );
+          MountingHud.setTooltip(button, tooltip);
+        }
       }
     });
 
