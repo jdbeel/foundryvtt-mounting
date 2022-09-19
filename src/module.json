@@ -32,11 +32,19 @@
   ],
   "relationships": {
     "systems": [],
-    "requires": ["lib-wrapper", "token-attacher"],
+    "requires": [],
     "conflicts": []
   },
   "socket": false,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
-  "library": false
+  "library": false,
+  "dependencies": [
+    {
+      "name": "lib-wrapper"
+    },
+    {
+      "name": "token-attacher"
+    }
+  ]
 }
