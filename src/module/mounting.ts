@@ -13,22 +13,20 @@ export class Mounting {
   static async mount(riderToken: Token | undefined) {
     // In order to mount the user must select exactly two tokens.
     if (getCanvas().tokens?.controlled.length != 2) {
-      ui?.notifications?.error(
-        'Please select exactly two tokens and click the mount button on the token you wish to be the rider.',
-      );
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.TwoNotSelected'));
       return;
     }
 
     // This is mainly fall-back, wackiness is the only reason this should ever be true.
     if (riderToken == undefined) {
-      ui?.notifications?.error('Unable to load rider token.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.RiderTokenUndefined'));
       return;
     }
 
     // Likewise here. The token should be selected at this point.
     const mountToken: Token | undefined = getCanvas().tokens?.controlled.find((t) => t.id != riderToken.id);
     if (mountToken == undefined) {
-      ui?.notifications?.error('Unable to load mount token.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountTokenUndefined'));
       return;
     }
 
@@ -50,27 +48,32 @@ export class Mounting {
     // @ts-ignore
     await window['tokenAttacher'].attachElementToToken(mountToken, riderToken, true);
 
+    const messageData = {
+      rider_name: riderToken.name,
+      mount_name: mountToken.name,
+    };
+    const message = getGame().i18n.format('MOUNTING.info.Mount', messageData);
     const chatData: ChatMessageDataConstructorData = {
       type: 4,
       user: getGame().user,
       speaker: { alias: 'Mounting' },
-      content: `${riderToken.document.name} mounts ${mountToken?.document.name}.`,
+      content: message,
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log(`${this.ID} | ${riderToken.document.name} mounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ` + message);
   }
 
   static async unmount(riderToken: Token | undefined) {
     if (riderToken == undefined) {
-      ui?.notifications?.error('Rider Token is undefined.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.RiderTokenUndefined'));
       return;
     }
 
     const mount_id = riderToken.document.getFlag(this.ID, 'mount_id') as string;
     const mountToken = getToken(mount_id);
     if (mountToken == undefined) {
-      ui?.notifications?.error('Mount token is undefined.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountTokenUndefined'));
       return;
     }
 
@@ -82,14 +85,21 @@ export class Mounting {
     // @ts-ignore
     await window['tokenAttacher'].detachElementFromToken(mountToken, riderToken, true);
 
+    const messageData = {
+      rider_name: riderToken.name,
+      mount_name: mountToken.name
+    };
+    console.log(messageData);
+    const message = getGame().i18n.format('MOUNTING.info.Dismount', messageData);
+    console.log(message);
     const chatData: ChatMessageDataConstructorData = {
       type: 4,
       user: getGame().user,
       speaker: { alias: 'Mounting' },
-      content: `${riderToken.document.name} dismounts ${mountToken?.document.name}.`,
+      content: message,
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log(`${this.ID} | ${riderToken.document.name} dismounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ` + message);
   }
 }
