@@ -1,6 +1,7 @@
 import { Mounting } from './mounting.js';
-import { getCanvas, getToken } from './utils.js';
+import { getCanvas, getGame, getToken } from './utils.js';
 
+// Temporary shim
 type hudToken = {
   _id: string;
 };
@@ -20,7 +21,7 @@ export class MountingHud {
 
   static createMountButton(tooltip: string): JQuery {
     const button = $(
-      `<div class="control-icon mounting fa-stack" title="${tooltip}">
+      `<div class="control-icon ${Mounting.ID} fa-stack" title="${tooltip}">
         <i class="fas fa-horse fa-stack-1x"></i>
         <i class="fas fa-slash fa-stack-1x" style="position: absolute; color: tomato;"></i>
       </div>`,
@@ -37,21 +38,12 @@ export class MountingHud {
     return button;
   }
 
-  static createTooltip(riderName: string, mountName: string, mount = true): string {
-    if (mount === true) {
-      return `Mount ${riderName} onto ${mountName}`;
-    } else {
-      return `Dismount ${riderName} from ${mountName}`;
-    }
-  }
-
   static setTooltip(button: JQuery, tooltip: string) {
     button.attr('title', tooltip);
   }
 
   static addButton(app: TokenHUD, html: JQuery, hudToken: hudToken) {
     let button: JQuery;
-    let tooltip: string;
     let riderToken: Token | undefined, mountToken: Token | undefined;
     let mounted: boolean;
 
@@ -61,17 +53,17 @@ export class MountingHud {
       return;
     }
 
-    if (hasProperty(selectedToken?.document, 'flags.foundryvtt-mounting.mount_id')) {
+    if (hasProperty(selectedToken?.document, `flags.${Mounting.ID}.mount_id`)) {
       riderToken = selectedToken;
       mountToken = getToken(
         // @ts-ignore
-        selectedToken?.document.getFlag('foundryvtt-mounting', 'mount_id'),
+        selectedToken?.document.getFlag(Mounting.ID, 'mount_id'),
       );
       mounted = true;
-    } else if (hasProperty(selectedToken?.document, 'flags.foundryvtt-mounting.rider_id')) {
+    } else if (hasProperty(selectedToken?.document, `flags.${Mounting.ID}.rider_id`)) {
       riderToken = getToken(
         // @ts-ignore
-        selectedToken?.document.getFlag('foundryvtt-mounting', 'rider_id'),
+        selectedToken?.document.getFlag(Mounting.ID, 'rider_id'),
       );
       mountToken = selectedToken;
       mounted = true;
@@ -81,28 +73,45 @@ export class MountingHud {
       mounted = false;
     }
 
-    tooltip = this.createTooltip(selectedToken?.name ?? '<undefined>', mountToken?.name ?? '<undefined>', !mounted);
+    const tooltipData = {
+      rider_name: riderToken?.name,
+      mount_name: mountToken?.name,
+    };
+
     if (mounted === true) {
-      button = this.createDismountButton(tooltip);
+      button = this.createDismountButton(getGame().i18n.format('MOUNTING.info.DismountTooltip', tooltipData));
     } else {
-      button = this.createMountButton(tooltip);
+      button = this.createMountButton(getGame().i18n.format('MOUNTING.info.MountTooltip', tooltipData));
     }
 
+    const errorData = {
+      rider_id: riderToken?.id,
+      mount_id: mountToken?.id,
+    };
+
     button.find('i').on('click', async function (event) {
-      if (riderToken?.document.getFlag('foundryvtt-mounting', 'mount_id') != undefined) {
+      if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') != undefined) {
+        // Attempt to dismount...
         await Mounting.unmount(riderToken);
-        MountingHud.removeSlash(button);
-        tooltip = MountingHud.createTooltip(riderToken?.name ?? '<undefined>', mountToken?.name ?? '<undefined>');
-        MountingHud.setTooltip(button, tooltip);
+        // If dismount succeeded, then update the hud.
+        // Otherwise, print an error.
+        if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') == undefined) {
+          MountingHud.removeSlash(button);
+          MountingHud.setTooltip(button, getGame().i18n.format('MOUNTING.info.MountTooltip', tooltipData));
+        } else {
+          ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.DismountUnsuccessful', errorData));
+        }
       } else {
+        // Attempt to mount...
         await Mounting.mount(riderToken);
-        MountingHud.addSlash(button);
-        tooltip = MountingHud.createTooltip(
-          riderToken?.name ?? '<undefined>',
-          mountToken?.name ?? '<undefined>',
-          false,
-        );
-        MountingHud.setTooltip(button, tooltip);
+        // If mount succeeded, then update the hud.
+        // Otherwise, print an error.
+        if (riderToken?.document.getFlag(Mounting.ID, 'mount_id') != undefined) {
+          MountingHud.addSlash(button);
+          MountingHud.setTooltip(button, getGame().i18n.format('MOUNTING.info.DismountTooltip', tooltipData));
+        } else {
+          ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountUnsuccessful', errorData));
+        }
       }
     });
 

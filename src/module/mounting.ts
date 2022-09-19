@@ -13,87 +13,93 @@ export class Mounting {
   static async mount(riderToken: Token | undefined) {
     // In order to mount the user must select exactly two tokens.
     if (getCanvas().tokens?.controlled.length != 2) {
-      ui?.notifications?.error(
-        'Please select exactly two tokens and click the mount button on the token you wish to be the rider.',
-      );
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.TwoNotSelected'));
       return;
     }
 
     // This is mainly fall-back, wackiness is the only reason this should ever be true.
     if (riderToken == undefined) {
-      ui?.notifications?.error('Unable to load rider token.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.RiderTokenUndefined'));
       return;
     }
 
     // Likewise here. The token should be selected at this point.
     const mountToken: Token | undefined = getCanvas().tokens?.controlled.find((t) => t.id != riderToken.id);
     if (mountToken == undefined) {
-      ui?.notifications?.error('Unable to load mount token.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountTokenUndefined'));
       return;
     }
 
     // Shim is used while we wait for the types to be updated.
     const riderTokenDocument = riderToken.document as ShimTokenDocument;
     const mountTokenDocument = mountToken.document as ShimTokenDocument;
-    await riderTokenDocument.setFlag('foundryvtt-mounting', 'mount_id', mountToken.id);
-    await mountTokenDocument.setFlag('foundryvtt-mounting', 'rider_id', riderToken.id);
-    riderTokenDocument.update({ name: riderTokenDocument.name + ' | ' + mountTokenDocument.name.slice(0, 8) + '...' });
-    mountTokenDocument.update({ name: mountTokenDocument.name + ' | ' + riderTokenDocument.name.slice(0, 8) + '...' });
+    await riderTokenDocument.setFlag(this.ID, 'mount_id', mountToken.id);
+    await mountTokenDocument.setFlag(this.ID, 'rider_id', riderToken.id);
 
     // This currently is detected as an error, but will stop doing so when the
     // foundryvtttypes module is updated.
-    await riderToken.document.update({
+    await mountToken.document.update({
       // @ts-ignore
-      x: mountToken.document.x,
+      x: riderToken.document.x,
       // @ts-ignore
-      y: mountToken.document.y,
+      y: riderToken.document.y,
     });
 
     // @ts-ignore
     await window['tokenAttacher'].attachElementToToken(mountToken, riderToken, true);
 
+    const messageData = {
+      rider_name: riderToken.name,
+      mount_name: mountToken.name,
+    };
+    const message = getGame().i18n.format('MOUNTING.info.Mount', messageData);
     const chatData: ChatMessageDataConstructorData = {
       type: 4,
       user: getGame().user,
       speaker: { alias: 'Mounting' },
-      content: `${riderToken.document.name} mounts ${mountToken?.document.name}.`,
+      content: message,
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log('foundryvtt-mounting | ' + `${riderToken.document.name} mounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ` + message);
   }
 
   static async unmount(riderToken: Token | undefined) {
     if (riderToken == undefined) {
-      ui?.notifications?.error('Rider Token is undefined.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.RiderTokenUndefined'));
       return;
     }
 
-    const mount_id = riderToken.document.getFlag('foundryvtt-mounting', 'mount_id') as string;
+    const mount_id = riderToken.document.getFlag(this.ID, 'mount_id') as string;
     const mountToken = getToken(mount_id);
     if (mountToken == undefined) {
-      ui?.notifications?.error('Mount token is undefined.');
+      ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountTokenUndefined'));
       return;
     }
 
     const riderTokenDocument = riderToken.document as ShimTokenDocument;
     const mountTokenDocument = mountToken.document as ShimTokenDocument;
-    await riderTokenDocument.unsetFlag('foundryvtt-mounting', 'mount_id');
-    await mountTokenDocument.unsetFlag('foundryvtt-mounting', 'rider_id');
-    riderTokenDocument.update({ name: riderTokenDocument.name.slice(0, riderTokenDocument.name.indexOf('|') - 1) });
-    mountTokenDocument.update({ name: mountTokenDocument.name.slice(0, mountTokenDocument.name.indexOf('|') - 1) });
+    await riderTokenDocument.unsetFlag(this.ID, 'mount_id');
+    await mountTokenDocument.unsetFlag(this.ID, 'rider_id');
 
     // @ts-ignore
-    await window['tokenAttacher'].detachAllElementsFromToken(riderToken, true);
+    await window['tokenAttacher'].detachElementFromToken(mountToken, riderToken, true);
 
+    const messageData = {
+      rider_name: riderToken.name,
+      mount_name: mountToken.name,
+    };
+    console.log(messageData);
+    const message = getGame().i18n.format('MOUNTING.info.Dismount', messageData);
+    console.log(message);
     const chatData: ChatMessageDataConstructorData = {
       type: 4,
       user: getGame().user,
       speaker: { alias: 'Mounting' },
-      content: `${riderToken.document.name} dismounts ${mountToken?.document.name}.`,
+      content: message,
       // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
     };
     ChatMessage.create(chatData);
-    console.log('foundryvtt-mounting | ' + `${riderToken.document.name} dismounts ${mountToken?.document.name}.`);
+    console.log(`${this.ID} | ` + message);
   }
 }

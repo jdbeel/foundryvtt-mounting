@@ -1,8 +1,8 @@
 {
   "private": true,
   "name": "foundryvtt-mounting",
-  "description": "<description of the package>",
-  "license": "<please choose an appropriate license. https://choosealicense.com/ is a great place to get more information if you are unsure>",
+  "description": "An (extremely) lightweight FoundryVTT module which provides an interface for players to ride their mounts.",
+  "license": "GNU-GPL v3",
   "homepage": "https://github.com/jdbeel/foundryvtt-mounting",
   "repository": {
     "type": "git",

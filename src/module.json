@@ -1,19 +1,19 @@
 {
   "id": "foundryvtt-mounting",
-  "title": "Mounting",
+  "title": "FoundryVTT Mounting",
   "description": "Mounting",
   "authors": [
     {
-      "name": "<your name>",
-      "email": "<optionally your e-mail address>",
-      "discord": "<optionally your discord username>"
+      "name": "Jacob Beel",
+      "email": "mounting+jacobdbeel@gmail.com",
+      "discord": ""
     }
   ],
   "url": "This is auto replaced",
-  "license": "<please choose an appropriate license. https://choosealicense.com/ is a great place to get more information if you are unsure>",
-  "readme": "<optionally the URL to your readme>",
-  "bugs": "<optionally the URL to your issue list>",
-  "changelog": "<optionally the URL to your changelog>",
+  "license": "GNU-GPL v3",
+  "readme": "https://github.com/jdbeel/foundryvtt-mounting/blob/master/README.md",
+  "bugs": "https://github.com/jdbeel/foundryvtt-mounting/issues",
+  "changelog": "https://github.com/jdbeel/foundryvtt-mounting/releases",
   "version": "This is auto replaced",
   "compatibility": {
     "minimum": "10",
@@ -21,7 +21,7 @@
   },
   "scripts": [],
   "esmodules": ["module/foundryvtt-mounting.js"],
-  "styles": ["styles/foundryvtt-mounting.css"],
+  "styles": [],
   "packs": [],
   "languages": [
     {
@@ -38,5 +38,13 @@
   "socket": false,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
-  "library": false
+  "library": false,
+  "dependencies": [
+    {
+      "name": "lib-wrapper"
+    },
+    {
+      "name": "token-attacher"
+    }
+  ]
 }
