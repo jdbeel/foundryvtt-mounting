@@ -75,7 +75,7 @@ export class MountingHud {
 
     const tooltipData = {
       rider_name: riderToken?.name,
-      mount_name: mountToken?.name
+      mount_name: mountToken?.name,
     };
 
     if (mounted === true) {

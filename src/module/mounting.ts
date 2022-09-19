@@ -87,7 +87,7 @@ export class Mounting {
 
     const messageData = {
       rider_name: riderToken.name,
-      mount_name: mountToken.name
+      mount_name: mountToken.name,
     };
     console.log(messageData);
     const message = getGame().i18n.format('MOUNTING.info.Dismount', messageData);
