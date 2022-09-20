@@ -47,7 +47,7 @@ export class Mounting {
 
     // Push token to front of token "stack"
     // This makes some fairly heavy assumptions. There has to be a better practice here...
-    
+
     // Code shamlessly borrowed from: https://github.com/David-Zvekic/pushTokenBack/blob/main/pushTokenBack.js#L61
     // @ts-ignore
     const riderIndex = getCanvas().tokens?.children[0].children.findIndex((t) => t.id == mountToken.id);
