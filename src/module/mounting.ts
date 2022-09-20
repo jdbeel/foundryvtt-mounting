@@ -50,9 +50,9 @@ export class Mounting {
 
     // Code shamlessly borrowed from: https://github.com/David-Zvekic/pushTokenBack/blob/main/pushTokenBack.js#L61
     // @ts-ignore
-    const riderIndex = getCanvas().tokens?.children[0].children.findIndex((t) => t.id == mountToken.id);
+    const mountIndex = getCanvas().tokens?.children[0].children.findIndex((t) => t.id == mountToken.id);
     // @ts-ignore
-    canvas?.tokens.children[0].children.splice(riderIndex, 1);
+    canvas?.tokens.children[0].children.splice(mountIndex, 1);
     // @ts-ignore
     canvas?.tokens.children[0].children.unshift(mountToken);
 
