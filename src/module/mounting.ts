@@ -45,6 +45,17 @@ export class Mounting {
       y: riderToken.document.y,
     });
 
+    // Push token to front of token "stack"
+    // This makes some fairly heavy assumptions. There has to be a better practice here...
+
+    // Code shamlessly borrowed from: https://github.com/David-Zvekic/pushTokenBack/blob/main/pushTokenBack.js#L61
+    // @ts-ignore
+    const mountIndex = getCanvas().tokens?.children[0].children.findIndex((t) => t.id == mountToken.id);
+    // @ts-ignore
+    canvas?.tokens.children[0].children.splice(mountIndex, 1);
+    // @ts-ignore
+    canvas?.tokens.children[0].children.unshift(mountToken);
+
     // @ts-ignore
     await window['tokenAttacher'].attachElementToToken(mountToken, riderToken, true);
 
