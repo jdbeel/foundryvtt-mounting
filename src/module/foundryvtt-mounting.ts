@@ -15,27 +15,29 @@
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 import { MountingHud } from './hud';
-import { Mounting } from './mounting';
+
+import { MODULE_ID } from './const';
 
 // Initialize module
 Hooks.once('init', async () => {
-  console.log(`${Mounting.ID} | Initializing foundryvtt-mounting.`);
+    const MODULE_ID = 'foundryvtt-mounting';
+    console.log(`${MODULE_ID} | Initializing foundryvtt-mounting.`);
 
-  // Assign custom classes and constants here
+    // Assign custom classes and constants here
 
-  // Register custom module settings
-  registerSettings();
+    // Register custom module settings
+    registerSettings();
 
-  // Preload Handlebars templates
-  await preloadTemplates();
+    // Preload Handlebars templates
+    await preloadTemplates();
 
-  // Register custom sheets (if any)
+    // Register custom sheets (if any)
 });
 
 // Setup module
 Hooks.once('setup', async () => {
-  // Do anything after initialization but before
-  // ready
+    // Do anything after initialization but before
+    // ready
 });
 
 // When ready
@@ -44,7 +46,7 @@ Hooks.once('setup', async () => {
 // });
 
 Hooks.on('renderTokenHUD', async (app: TokenHUD, html: JQuery, data: any) => {
-  MountingHud.render(app, html, data);
+    MountingHud.render(app, html, data);
 });
 
 // Add any additional hooks if necessary

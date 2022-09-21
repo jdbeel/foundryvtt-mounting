@@ -1,69 +1,69 @@
 {
-  "private": true,
-  "name": "foundryvtt-mounting",
-  "description": "An (extremely) lightweight FoundryVTT module which provides an interface for players to ride their mounts.",
-  "license": "GNU-GPL v3",
-  "homepage": "https://github.com/jdbeel/foundryvtt-mounting",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jdbeel/foundryvtt-mounting"
-  },
-  "bugs": {
-    "url": "https://github.com/jdbeel/foundryvtt-mounting/issues"
-  },
-  "contributors": [
-    {
-      "name": "Jacob Beel",
-      "email": "mounting+jacobdbeel@gmail.com"
+    "private": true,
+    "name": "foundryvtt-mounting",
+    "description": "An (extremely) lightweight FoundryVTT module which provides an interface for players to ride their mounts.",
+    "license": "GNU-GPL v3",
+    "homepage": "https://github.com/jdbeel/foundryvtt-mounting",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jdbeel/foundryvtt-mounting"
+    },
+    "bugs": {
+        "url": "https://github.com/jdbeel/foundryvtt-mounting/issues"
+    },
+    "contributors": [
+        {
+            "name": "Jacob Beel",
+            "email": "mounting+jacobdbeel@gmail.com"
+        }
+    ],
+    "type": "module",
+    "scripts": {
+        "build": "gulp build",
+        "build:watch": "gulp watch",
+        "link-project": "gulp link",
+        "clean": "gulp clean",
+        "clean:link": "gulp link --clean",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint --ext .ts,.js,.cjs,.mjs .",
+        "lint:fix": "eslint --ext .ts,.js,.cjs,.mjs --fix .",
+        "format": "prettier --write \"./**/*.(ts|js|cjs|mjs|json|yml|css)\"",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:ci": "jest --ci --reporters=default --reporters=jest-junit",
+        "postinstall": "husky install"
+    },
+    "devDependencies": {
+        "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",
+        "@rollup/plugin-node-resolve": "^14.1.0",
+        "@rollup/plugin-typescript": "^8.5.0",
+        "@rollup/stream": "^2.0.0",
+        "@types/jquery": "^3.5.14",
+        "@typescript-eslint/eslint-plugin": "^5.37.0",
+        "@typescript-eslint/parser": "^5.37.0",
+        "eslint": "^8.23.1",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-jest": "^27.0.4",
+        "eslint-plugin-prettier": "^4.2.1",
+        "fs-extra": "^10.1.0",
+        "gulp": "^4.0.2",
+        "gulp-sourcemaps": "^3.0.0",
+        "husky": "^8.0.1",
+        "jest": "^29.0.3",
+        "jest-environment-jsdom": "^29.0.3",
+        "jest-junit": "^14.0.1",
+        "lint-staged": "^13.0.3",
+        "prettier": "^2.7.1",
+        "rollup": "^2.79.0",
+        "ts-jest": "^29.0.1",
+        "tslib": "^2.4.0",
+        "typescript": "^4.8.3",
+        "vinyl-buffer": "^1.0.1",
+        "vinyl-source-stream": "^2.0.0",
+        "yargs": "^17.5.1"
+    },
+    "lint-staged": {
+        "*.(ts|js|cjs|mjs)": "eslint --fix",
+        "*.(json|yml|css)": "prettier --write"
     }
-  ],
-  "type": "module",
-  "scripts": {
-    "build": "gulp build",
-    "build:watch": "gulp watch",
-    "link-project": "gulp link",
-    "clean": "gulp clean",
-    "clean:link": "gulp link --clean",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint --ext .ts,.js,.cjs,.mjs .",
-    "lint:fix": "eslint --ext .ts,.js,.cjs,.mjs --fix .",
-    "format": "prettier --write \"./**/*.(ts|js|cjs|mjs|json|yml|css)\"",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci --reporters=default --reporters=jest-junit",
-    "postinstall": "husky install"
-  },
-  "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "@rollup/plugin-typescript": "^8.5.0",
-    "@rollup/stream": "^2.0.0",
-    "@types/jquery": "^3.5.14",
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
-    "@typescript-eslint/parser": "^5.37.0",
-    "eslint": "^8.23.1",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-jest": "^27.0.4",
-    "eslint-plugin-prettier": "^4.2.1",
-    "fs-extra": "^10.1.0",
-    "gulp": "^4.0.2",
-    "gulp-sourcemaps": "^3.0.0",
-    "husky": "^8.0.1",
-    "jest": "^29.0.3",
-    "jest-environment-jsdom": "^29.0.3",
-    "jest-junit": "^14.0.1",
-    "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "rollup": "^2.79.0",
-    "ts-jest": "^29.0.1",
-    "tslib": "^2.4.0",
-    "typescript": "^4.8.3",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0",
-    "yargs": "^17.5.1"
-  },
-  "lint-staged": {
-    "*.(ts|js|cjs|mjs)": "eslint --fix",
-    "*.(json|yml|css)": "prettier --write"
-  }
 }
