@@ -85,7 +85,6 @@ export class MountingHud {
 
         button.find('i').on('click', async function (event) {
             if (riderToken.document.getFlag(MODULE_ID, RIDER_PROPERTY_NAME) != undefined) {
-                console.log(`${MODULE_ID} | DISMOUNT BUTTON CLICKED`); // TODO localization?
                 // Attempt to dismount...
                 await Mounting.unmount(riderToken);
                 // If dismount succeeded, then update the hud.
@@ -97,7 +96,6 @@ export class MountingHud {
                     ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.DismountUnsuccessful', errorData));
                 }
             } else {
-                console.log(`${MODULE_ID} | MOUNT BUTTON CLICKED`); // TODO localization?
                 // Attempt to mount...
                 await Mounting.mount(riderToken);
                 // If mount succeeded, then update the hud.

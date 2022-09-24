@@ -90,12 +90,12 @@ export class RiderData {
     }
 
     async setFlags() {
-        console.log(`${MODULE_ID} | SETTING FLAGS FOR RIDER ${this.id}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.SetFlagsRider", {id: this.id})}`);
         await this.getToken().document.setFlag(MODULE_ID, RIDER_PROPERTY_NAME, this);
     }
 
     async unsetFlags() {
-        console.log(`${MODULE_ID} | UNSETTING FLAGS FOR RIDER ${this.id}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.UnsetFlagsRider", {id: this.id})}`);
         await this.getToken().document.unsetFlag(MODULE_ID, RIDER_PROPERTY_NAME);
         await this.getToken().document.unsetFlag(TOKEN_ATTACHER_ID, 'offset');
     }
@@ -165,14 +165,13 @@ export class MountData {
     getTokenOfRider(riderId: string): Token | undefined {
         // @ts-ignore
         const riderToken = this.riders.find((r) => r.id == riderId);
-        if (riderToken == undefined) ui?.notifications?.error(
-            getGame().i18n.format("MOUNTING.error.MountNotContain", {id: riderId})
-        );
+        if (riderToken == undefined)
+            ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountNotContain', { id: riderId }));
         else return riderToken.getToken();
     }
 
     async setFlags() {
-        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.SetFlagsMount", {id: this.id})}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format('MOUNTING.info.SetFlagsMount', { id: this.id })}`);
         this.getToken().document.setFlag(MODULE_ID, MOUNT_PROPERTY_NAME, this);
 
         for (const rider of this.riders) {
@@ -182,19 +181,19 @@ export class MountData {
     }
 
     async unsetFlags() {
-        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.UnsetFlagsMount", {id: this.id})}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format('MOUNTING.info.UnsetFlagsMount', { id: this.id })}`);
         await this.getToken().document.unsetFlag(MODULE_ID, MOUNT_PROPERTY_NAME);
     }
 
     async addRiderById(id: string) {
         if (this.hasRider(id)) {
-            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.AlreadyRiding"));
+            ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.AlreadyRiding'));
             return;
         }
 
         if (this.riders.length >= this.width * this.height) {
             // Mount is full. Raise an error?
-            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.MountFull"));
+            ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountFull'));
             return;
         }
 
@@ -234,7 +233,9 @@ export class MountData {
         }
 
         // Shouldn't get down here, but...
-        ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.MountUnsuccessful", {rider_id: id, mount_id: this.id}));
+        ui?.notifications?.error(
+            getGame().i18n.format('MOUNTING.error.MountUnsuccessful', { rider_id: id, mount_id: this.id }),
+        );
     }
 
     private addRiderByIdToSeat(id: string, seatX: number, seatY: number): RiderData {
@@ -253,7 +254,7 @@ export class MountData {
 
     async removeRiderById(id: string) {
         if (!this.hasRider(id)) {
-            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.NotRounding"));
+            ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.NotRounding'));
             return;
         }
 
