@@ -16,8 +16,6 @@ import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 import { MountingHud } from './hud';
 
-import { MODULE_ID } from './const';
-
 // Initialize module
 Hooks.once('init', async () => {
     const MODULE_ID = 'foundryvtt-mounting';
@@ -45,6 +43,7 @@ Hooks.once('setup', async () => {
 
 // });
 
+// @ts-ignore
 Hooks.on('renderTokenHUD', async (app: TokenHUD, html: JQuery, data: any) => {
     MountingHud.render(app, html, data);
 });

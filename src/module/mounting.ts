@@ -1,15 +1,9 @@
 import { ChatMessageDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/chatMessageData';
-import { getCanvas, getGame, getToken } from './utils';
+import { getCanvas, getGame } from './utils';
 
 import { MountData, RiderData } from './data';
 
-import { MODULE_ID, RIDER_PROPERTY_NAME } from './const';
-
-// This is used as a shim until foundry-vtt-types is updated to v10
-interface ShimTokenDocument extends TokenDocument {
-    height: number;
-    width: number;
-}
+import { MODULE_ID } from './const';
 
 export class Mounting {
     static ID = 'foundryvtt-mounting';
@@ -46,7 +40,7 @@ export class Mounting {
         // @ts-ignore
         canvas?.tokens.children[0].children.unshift(mountToken);
 
-        let mountData = MountData.fromTokenId(mountToken.id);
+        const mountData = MountData.fromTokenId(mountToken.id);
         await mountData.addRiderById(riderToken.id);
     }
 
@@ -57,8 +51,7 @@ export class Mounting {
         }
 
         const riderData = RiderData.fromTokenId(riderToken.id);
-        if (riderData == undefined)
-            return; // TODO error
+        if (riderData == undefined) return; // TODO error
         const mountTokenId = riderData.mountId;
 
         if (mountTokenId == undefined) {
@@ -66,15 +59,15 @@ export class Mounting {
             return;
         }
 
-        let mountData = MountData.fromTokenId(mountTokenId);
+        const mountData = MountData.fromTokenId(mountTokenId);
         if (mountData.hasRider(riderToken.id)) {
-           await mountData.removeRiderById(riderToken.id);
+            await mountData.removeRiderById(riderToken.id);
         }
 
-        const message = getGame().i18n.format(
-            'MOUNTING.info.Dismount',
-            {rider_name: riderToken.name, mount_name: mountTokenId},
-        );
+        const message = getGame().i18n.format('MOUNTING.info.Dismount', {
+            rider_name: riderToken.name,
+            mount_name: mountTokenId,
+        });
         const chatData: ChatMessageDataConstructorData = {
             type: 4,
             user: getGame().user,

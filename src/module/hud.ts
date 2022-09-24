@@ -54,16 +54,12 @@ export class MountingHud {
         if (riderData == undefined) {
             mounted = false;
             let selectedToken = getToken(hudToken._id);
-            if (selectedToken != undefined)
-                riderToken = selectedToken;
-            else
-                return; // TODO error.
-            
+            if (selectedToken != undefined) riderToken = selectedToken;
+            else return; // TODO error.
+
             selectedToken = getCanvas().tokens?.controlled.find((t) => t.id != selectedToken?.id);
-            if (selectedToken != undefined)
-                mountToken = selectedToken;
-            else
-                return; // TODO error.
+            if (selectedToken != undefined) mountToken = selectedToken;
+            else return; // TODO error.
         } else {
             mounted = true;
             riderToken = riderData.getToken();

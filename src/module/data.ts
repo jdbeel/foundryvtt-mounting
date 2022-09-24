@@ -1,12 +1,10 @@
 import { getCanvas } from './utils';
 import { MODULE_ID, MOUNT_PROPERTY_NAME, RIDER_PROPERTY_NAME, TOKEN_ATTACHER_ID } from './const';
 
-
 interface ShimTokenDocument extends TokenDocument {
     height: number;
     width: number;
 }
-
 
 export class RiderData {
     id: string;
@@ -21,7 +19,7 @@ export class RiderData {
         this.seatY = seatY;
     }
 
-    computeOffset(): Object {
+    computeOffset(): Record<string, unknown> {
         const canvas = getCanvas();
         let gridSize: number;
         if (canvas.grid == undefined) {
@@ -32,14 +30,14 @@ export class RiderData {
 
         const mountData = MountData.fromTokenId(this.mountId);
 
-        let result = {
+        const result = {
             x: 0,
             y: 0,
             centerX: 0,
             centerY: 0,
-        }
+        };
 
-        let [halfHeight, halfWidth] = [mountData.height / 2, mountData.width / 2];
+        const [halfHeight, halfWidth] = [mountData.height / 2, mountData.width / 2];
 
         // top-left quadrant
         if (this.seatX + 1 <= halfWidth && this.seatY + 1 <= halfHeight) {
@@ -47,19 +45,19 @@ export class RiderData {
             result.y = -gridSize;
             result.centerX = -gridSize / 2;
             result.centerY = -gridSize / 2;
-        // top-right quadrant
+            // top-right quadrant
         } else if (this.seatX + 1 > halfWidth && this.seatY + 1 <= halfHeight) {
             result.x = gridSize;
             result.y = -gridSize;
             result.centerX = gridSize / 2;
             result.centerY = -gridSize / 2;
-        // bottom-left quadrant
+            // bottom-left quadrant
         } else if (this.seatX + 1 <= halfWidth && this.seatY + 1 > halfHeight) {
             result.x = -gridSize;
             result.y = gridSize;
             result.centerX = -gridSize / 2;
             result.centerY = gridSize / 2;
-        // bottom-right quadrant
+            // bottom-right quadrant
         } else if (this.seatX + 1 > halfWidth && this.seatY + 1 > halfHeight) {
             result.x = gridSize;
             result.y = gridSize;
@@ -79,21 +77,16 @@ export class RiderData {
     static fromTokenId(id: string): RiderData | undefined {
         // @ts-ignore
         const token = getCanvas().tokens?.children[0].children.find((t) => t.id == id);
-        let data = token.document.getFlag(MODULE_ID, RIDER_PROPERTY_NAME) as RiderData;
+        const data = token.document.getFlag(MODULE_ID, RIDER_PROPERTY_NAME) as unknown as RiderData;
 
         if (data != undefined) {
             return RiderData.fromObject(data);
         }
     }
 
-    static fromObject(input: Object): RiderData {
-        let inputData = input as RiderData;
-        return new RiderData(
-            inputData.id,
-            inputData.mountId,
-            inputData.seatX,
-            inputData.seatY,
-        );
+    static fromObject(input: RiderData): RiderData {
+        const inputData = input;
+        return new RiderData(inputData.id, inputData.mountId, inputData.seatX, inputData.seatY);
     }
 
     async setFlags() {
@@ -137,8 +130,8 @@ export class MountData {
         this.height = tokenDocument.height ?? 1;
 
         this.riders = new Array<RiderData>();
-        for (var rider of riders) {
-            this.riders.push(RiderData.fromObject(rider))
+        for (const rider of riders) {
+            this.riders.push(RiderData.fromObject(rider));
         }
         this.riders = riders;
 
@@ -156,9 +149,8 @@ export class MountData {
     }
 
     hasRider(id: string): boolean {
-        for (var rider of this.riders) {
-            if (rider.id == id)
-                return true;
+        for (const rider of this.riders) {
+            if (rider.id == id) return true;
         }
 
         return false;
@@ -172,19 +164,17 @@ export class MountData {
 
     getTokenOfRider(riderId: string): Token | undefined {
         // @ts-ignore
-        let riderToken = this.riders.find((r) => r.id == riderId);
-        if (riderToken == undefined)
-            ui?.notifications?.error(`Mount has no token with id ${riderId}`);
-        else
-            return riderToken.getToken();
+        const riderToken = this.riders.find((r) => r.id == riderId);
+        if (riderToken == undefined) ui?.notifications?.error(`Mount has no token with id ${riderId}`);
+        else return riderToken.getToken();
     }
 
     async setFlags() {
         console.log(`${MODULE_ID} | SETTING FLAGS FOR MOUNT ${this.id}`); // TODO localization
         this.getToken().document.setFlag(MODULE_ID, MOUNT_PROPERTY_NAME, this);
 
-        for (var rider of this.riders) {
-            let riderData = RiderData.fromObject(rider);
+        for (const rider of this.riders) {
+            const riderData = RiderData.fromObject(rider);
             riderData.setFlags();
         }
     }
@@ -208,10 +198,8 @@ export class MountData {
 
         const first: boolean = this.riders.length == 0;
 
-        if (first)
-            console.log(`${MODULE_ID} | This is the first token attached to ${this.id}.`);
-        else
-            console.log(`${MODULE_ID} | This is NOT the first token attached to ${this.id}`);
+        if (first) console.log(`${MODULE_ID} | This is the first token attached to ${this.id}.`);
+        else console.log(`${MODULE_ID} | This is NOT the first token attached to ${this.id}`);
 
         for (let i = 0; i < this.height; i++) {
             for (let j = 0; j < this.width; j++) {
@@ -223,7 +211,7 @@ export class MountData {
                     await riderData.setFlags();
 
                     if (first) {
-                        let [newX, newY] = [riderData.getToken().x, riderData.getToken().y];
+                        const [newX, newY] = [riderData.getToken().x, riderData.getToken().y];
                         console.log(`${MODULE_ID} | Moving mount ${this.id} to ${newX},${newY}.`);
                         this.setPosition(newX, newY);
                     }
@@ -231,8 +219,11 @@ export class MountData {
                     console.log(`${MODULE_ID} | Attaching ${riderToken.id} to ${this.id}.`);
                     await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken(), true);
 
-                    let oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Object;
-                    let newOffset = {
+                    const oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Record<
+                        string,
+                        unknown
+                    >;
+                    const newOffset = {
                         ...oldOffset,
                         ...riderData.computeOffset(),
                     };
@@ -260,7 +251,7 @@ export class MountData {
         this.riders.push(riderData);
         this.seats[seatX][seatY] = true;
 
-        return riderData
+        return riderData;
     }
 
     async removeRiderById(id: string) {
@@ -279,11 +270,9 @@ export class MountData {
         if (index >= 0) {
             this.riders.splice(index, 1);
         }
-        
-        if (this.riders.length == 0)
-            this.unsetFlags();
-        else
-            await this.setFlags();
+
+        if (this.riders.length == 0) this.unsetFlags();
+        else await this.setFlags();
     }
 
     async setPosition(newX: number, newY: number) {
@@ -303,7 +292,7 @@ export class MountData {
     static fromTokenId(id: string): MountData {
         // @ts-ignore
         const token = getCanvas().tokens?.children[0].children.find((t) => t.id == id);
-        let data = token.document.getFlag(MODULE_ID, MOUNT_PROPERTY_NAME) as MountData;
+        const data = token.document.getFlag(MODULE_ID, MOUNT_PROPERTY_NAME) as MountData;
 
         if (data == undefined) {
             return new MountData(id);
@@ -312,8 +301,8 @@ export class MountData {
         }
     }
 
-    static fromObject(input: Object): MountData {
-        let inputData = input as MountData;
+    static fromObject(input: MountData): MountData {
+        const inputData = input;
         return new MountData(inputData.id, inputData.riders);
     }
 }
