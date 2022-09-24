@@ -1,29 +1,12 @@
 import { getCanvas } from './utils';
 import { MODULE_ID, MOUNT_PROPERTY_NAME, RIDER_PROPERTY_NAME, TOKEN_ATTACHER_ID } from './const';
 
+
 interface ShimTokenDocument extends TokenDocument {
     height: number;
     width: number;
 }
 
-interface TokenAttacherOffset {
-    centerX: number;
-    centerY: number;
-    elevation: {
-        elevation: number;
-        flags: object;
-    };
-    offRot: number;
-    rot: number;
-    size: {
-        width: number;
-        height: number;
-        widthBase: number;
-        heightBase: number;
-    };
-    x: number;
-    y: number;
-};
 
 export class RiderData {
     id: string;
@@ -39,7 +22,6 @@ export class RiderData {
     }
 
     async computeOffset(): Promise<Object> {
-        // TODO
         const canvas = getCanvas();
         let gridSize: number;
         if (canvas.grid == undefined) {
@@ -175,7 +157,6 @@ export class MountData {
                 ...await riderData.computeOffset(),
             };
             await riderToken.document.setFlag(TOKEN_ATTACHER_ID, 'offset', newOffset);
-            console.log(riderToken.document.flags['token-attacher'].offset);
         }
     }
 

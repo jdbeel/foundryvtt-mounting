@@ -49,7 +49,6 @@ export class Mounting {
         let mountData = await MountData.fromTokenId(mountToken.id);
         mountData.addRiderById(riderToken.id);
         await mountData.update();
-        console.log(await MountData.fromTokenId(mountToken.id));
     }
 
     static async unmount(riderToken: Token | undefined) {
