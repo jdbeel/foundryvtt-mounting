@@ -214,6 +214,7 @@ export class MountData {
                         this.setPosition(newX, newY);
                     }
 
+                    // @ts-ignore
                     await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken(), true);
 
                     const oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Record<
@@ -263,6 +264,7 @@ export class MountData {
         riderData = RiderData.fromObject(riderData);
 
         await riderData.unsetFlags();
+        // @ts-ignore
         await window['tokenAttacher'].detachElementFromToken(riderData.getToken(), this.getToken(), false);
         if (index >= 0) {
             this.riders.splice(index, 1);
