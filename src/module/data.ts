@@ -21,7 +21,7 @@ export class RiderData {
         this.seatY = seatY;
     }
 
-    async computeOffset(): Promise<Object> {
+    computeOffset(): Object {
         const canvas = getCanvas();
         let gridSize: number;
         if (canvas.grid == undefined) {
@@ -30,29 +30,43 @@ export class RiderData {
             gridSize = getCanvas().grid?.size ?? 100;
         }
 
-        const mountData = await MountData.fromTokenId(this.mountId);
+        const mountData = MountData.fromTokenId(this.mountId);
 
-        let [x, y] = [-100 + (this.seatX * gridSize), -100 + (this.seatY * gridSize)];
         let result = {
-            x: x,
-            y: y,
+            x: 0,
+            y: 0,
             centerX: 0,
             centerY: 0,
         }
 
-        if (this.seatX + 1 > mountData.width / 2) {
-            result.centerX = x - ((gridSize * 0.5) * (this.seatX + 1));
-        } else {
-            result.centerX = x + ((gridSize * 0.5) * (this.seatX + 1));
+        let [halfHeight, halfWidth] = [mountData.height / 2, mountData.width / 2];
+
+        // top-left quadrant
+        if (this.seatX + 1 <= halfWidth && this.seatY + 1 <= halfHeight) {
+            result.x = -gridSize;
+            result.y = -gridSize;
+            result.centerX = -gridSize / 2;
+            result.centerY = -gridSize / 2;
+        // top-right quadrant
+        } else if (this.seatX + 1 > halfWidth && this.seatY + 1 <= halfHeight) {
+            result.x = gridSize;
+            result.y = -gridSize;
+            result.centerX = gridSize / 2;
+            result.centerY = -gridSize / 2;
+        // bottom-left quadrant
+        } else if (this.seatX + 1 <= halfWidth && this.seatY + 1 > halfHeight) {
+            result.x = -gridSize;
+            result.y = gridSize;
+            result.centerX = -gridSize / 2;
+            result.centerY = gridSize / 2;
+        // bottom-right quadrant
+        } else if (this.seatX + 1 > halfWidth && this.seatY + 1 > halfHeight) {
+            result.x = gridSize;
+            result.y = gridSize;
+            result.centerX = gridSize / 2;
+            result.centerY = gridSize / 2;
         }
 
-        console.log(this.seatY + 1);
-        console.log(mountData.height);
-        if (this.seatY + 1 > mountData.height / 2) {
-            result.centerY = y - ((gridSize * 0.5) * (this.seatY + 1));
-        } else {
-            result.centerY = y + ((gridSize * 0.5) * (this.seatY + 1));
-        }
         return result;
     }
 
@@ -62,14 +76,47 @@ export class RiderData {
         return token;
     }
 
-    static fromObject(input: Object, mountId: string): RiderData {
+    static fromTokenId(id: string): RiderData | undefined {
+        // @ts-ignore
+        const token = getCanvas().tokens?.children[0].children.find((t) => t.id == id);
+        let data = token.document.getFlag(MODULE_ID, RIDER_PROPERTY_NAME) as RiderData;
+
+        if (data != undefined) {
+            return RiderData.fromObject(data);
+        }
+    }
+
+    static fromObject(input: Object): RiderData {
         let inputData = input as RiderData;
         return new RiderData(
             inputData.id,
-            mountId,
+            inputData.mountId,
             inputData.seatX,
             inputData.seatY,
         );
+    }
+
+    async update() {
+        console.log(`${MODULE_ID} | UPDATING RIDER ${this.id}`);
+        await this.getToken().document.setFlag(MODULE_ID, RIDER_PROPERTY_NAME, this);
+    }
+
+    async unsetFlags() {
+        await this.getToken().document.unsetFlag(MODULE_ID, RIDER_PROPERTY_NAME);
+    }
+
+    async setPosition(newX: number, newY: number) {
+        const tokenDocument = this.getToken().document as ShimTokenDocument;
+        await tokenDocument.update({
+            x: newX,
+            y: newY,
+        });
+        this.getToken().document.update({
+            x: newX,
+            y: newY,
+        });
+        this.getToken().x = newX;
+        this.getToken().y = newY;
     }
 }
 
@@ -89,7 +136,7 @@ export class MountData {
 
         this.riders = new Array<RiderData>();
         for (var rider of riders) {
-            this.riders.push(RiderData.fromObject(rider, this.id))
+            this.riders.push(RiderData.fromObject(rider))
         }
         this.riders = riders;
 
@@ -131,36 +178,48 @@ export class MountData {
     }
 
     async update() {
-        if (await window['tokenAttacher'].getAllAttachedElementsOfToken(this.getToken()).length > 0) {
-            console.log(`${MODULE_ID} | Detaching all tokens from ${this.id}`);
-            await window['tokenAttacher'].detachAllElementsFromToken(this.getToken());
-        }
-        await this.getToken().document.setFlag(MODULE_ID, MOUNT_PROPERTY_NAME, this);
+        console.log(`${MODULE_ID} | UPDATING MOUNT ${this.id}`); // TODO localization
         let positionSet = false;
-        let tokensToAttach = new Array<Token>();
+        let riderTokens = new Array<Token>();
+
+        console.log(`${MODULE_ID} | Detaching tokens from ${this.id}`); // TODO localization
+        await window['tokenAttacher'].detachAllElementsFromToken(this.getToken(), true);
 
         for (var rider of this.riders) {
-            let riderData = RiderData.fromObject(rider, this.id);
+            let riderData = RiderData.fromObject(rider);
+            await riderData.update();
             let riderToken: Token = riderData.getToken();
-
-            tokensToAttach.push(riderToken);
+            
             if (!positionSet) {
                 positionSet = true;
+                console.log(`${MODULE_ID} | Setting mount position to (${riderToken.x},${riderToken.y})`); // TODO localization
                 this.setPosition(riderToken.x, riderToken.y);
-            }
+            } 
+            riderTokens.push(riderToken);
+        }
 
-            console.log(`${MODULE_ID} | Attaching token ${riderToken.id} to ${this.id}`);
-            await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken());
-            let oldOffset = await riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Object;
+        console.log(`${MODULE_ID} | Attaching ${riderTokens.length} token(s) to ${this.id}`); // TODO localization
+        await window['tokenAttacher'].attachElementsToToken(riderTokens, this.getToken(), false);
+
+        for (var rider of this.riders) {
+            let riderData = RiderData.fromObject(rider);
+            let riderToken = riderData.getToken();
+            let oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Object;
             let newOffset = {
                 ...oldOffset,
-                ...await riderData.computeOffset(),
+                ...riderData.computeOffset(),
             };
             await riderToken.document.setFlag(TOKEN_ATTACHER_ID, 'offset', newOffset);
         }
+
+        await this.getToken().document.setFlag(MODULE_ID, MOUNT_PROPERTY_NAME, this);
     }
 
-    addRiderById(id: string) {
+    async unsetFlags() {
+        await this.getToken().document.unsetFlag(MODULE_ID, MOUNT_PROPERTY_NAME);
+    }
+
+    async addRiderById(id: string) {
         if (this.hasRider(id)) {
             ui?.notifications?.error(`Token ${id} is already riding ${this.id}`);
             return;
@@ -174,8 +233,9 @@ export class MountData {
 
         for (let i = 0; i < this.height; i++) {
             for (let j = 0; j < this.width; j++) {
-                if (!this.seatIsOccupied(i, j)) {
+                if (!this.seatIsOccupied(j, i)) {
                     this.addRiderByIdToSeat(id, j, i);
+                    await this.update();
                     return;
                 }
             }
@@ -186,9 +246,34 @@ export class MountData {
     }
 
     private addRiderByIdToSeat(id: string, seatX: number, seatY: number) {
-        const riderData = new RiderData(id, this.id, seatX, seatY);
+        let riderData = RiderData.fromTokenId(id);
+        if (riderData == undefined) {
+            riderData = new RiderData(id, this.id, seatX, seatY);
+        } else {
+            riderData.seatX = seatX;
+            riderData.seatY = seatY;
+        }
         this.riders.push(riderData);
         this.seats[seatX][seatY] = true;
+    }
+
+    async removeRiderById(id: string) {
+        if (!this.hasRider(id)) {
+            ui?.notifications?.error(`Token ${id} not riding ${this.id}`); // TODO localization
+            return;
+        }
+
+        const index = this.riders.findIndex((r) => r.id == id);
+        let riderData = this.riders[index];
+        riderData = RiderData.fromObject(riderData);
+
+        console.log(`${MODULE_ID} | Detaching token ${riderData.getToken().id} from ${this.id}`); // TODO localization
+        await riderData.unsetFlags();
+        await window['tokenAttacher'].detachElementFromToken(riderData.getToken(), this.getToken(), true);
+        if (index >= 0) {
+            this.riders.splice(index, 1);
+        }
+        await this.update();
     }
 
     async setPosition(newX: number, newY: number) {
@@ -205,10 +290,10 @@ export class MountData {
         this.getToken().y = newY;
     }
 
-    static async fromTokenId(id: string): Promise<MountData> {
+    static fromTokenId(id: string): MountData {
         // @ts-ignore
         const token = getCanvas().tokens?.children[0].children.find((t) => t.id == id);
-        let data = await token.document.getFlag(MODULE_ID, MOUNT_PROPERTY_NAME) as MountData;
+        let data = token.document.getFlag(MODULE_ID, MOUNT_PROPERTY_NAME) as MountData;
 
         if (data == undefined) {
             return new MountData(id);
