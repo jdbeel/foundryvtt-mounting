@@ -1,4 +1,4 @@
-import { getCanvas } from './utils';
+import { getCanvas, getGame } from './utils';
 import { MODULE_ID, MOUNT_PROPERTY_NAME, RIDER_PROPERTY_NAME, TOKEN_ATTACHER_ID } from './const';
 
 interface ShimTokenDocument extends TokenDocument {
@@ -165,12 +165,14 @@ export class MountData {
     getTokenOfRider(riderId: string): Token | undefined {
         // @ts-ignore
         const riderToken = this.riders.find((r) => r.id == riderId);
-        if (riderToken == undefined) ui?.notifications?.error(`Mount has no token with id ${riderId}`);
+        if (riderToken == undefined) ui?.notifications?.error(
+            getGame().i18n.format("MOUNTING.error.MountNotContain", {id: riderId})
+        );
         else return riderToken.getToken();
     }
 
     async setFlags() {
-        console.log(`${MODULE_ID} | SETTING FLAGS FOR MOUNT ${this.id}`); // TODO localization
+        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.SetFlagsMount", {id: this.id})}`);
         this.getToken().document.setFlag(MODULE_ID, MOUNT_PROPERTY_NAME, this);
 
         for (const rider of this.riders) {
@@ -180,26 +182,23 @@ export class MountData {
     }
 
     async unsetFlags() {
-        console.log(`${MODULE_ID} | UNSETTING FLAGS FOR MOUNT ${this.id}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.UnsetFlagsMount", {id: this.id})}`);
         await this.getToken().document.unsetFlag(MODULE_ID, MOUNT_PROPERTY_NAME);
     }
 
     async addRiderById(id: string) {
         if (this.hasRider(id)) {
-            ui?.notifications?.error(`Token ${id} is already riding ${this.id}`);
+            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.AlreadyRiding"));
             return;
         }
 
         if (this.riders.length >= this.width * this.height) {
             // Mount is full. Raise an error?
-            ui?.notifications?.error('Mount is full.');
+            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.MountFull"));
             return;
         }
 
         const first: boolean = this.riders.length == 0;
-
-        if (first) console.log(`${MODULE_ID} | This is the first token attached to ${this.id}.`);
-        else console.log(`${MODULE_ID} | This is NOT the first token attached to ${this.id}`);
 
         for (let i = 0; i < this.height; i++) {
             for (let j = 0; j < this.width; j++) {
@@ -216,7 +215,6 @@ export class MountData {
                         this.setPosition(newX, newY);
                     }
 
-                    console.log(`${MODULE_ID} | Attaching ${riderToken.id} to ${this.id}.`);
                     await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken(), true);
 
                     const oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Record<
@@ -227,7 +225,6 @@ export class MountData {
                         ...oldOffset,
                         ...riderData.computeOffset(),
                     };
-                    console.log(`${MODULE_ID} | Updating offset of rider ${riderToken.id}.`);
                     await riderToken.document.setFlag(TOKEN_ATTACHER_ID, 'offset', newOffset);
 
                     await this.setFlags();
@@ -237,7 +234,7 @@ export class MountData {
         }
 
         // Shouldn't get down here, but...
-        ui?.notifications?.error('Error mounting.'); // TODO localization
+        ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.MountUnsuccessful", {rider_id: id, mount_id: this.id}));
     }
 
     private addRiderByIdToSeat(id: string, seatX: number, seatY: number): RiderData {
@@ -256,7 +253,7 @@ export class MountData {
 
     async removeRiderById(id: string) {
         if (!this.hasRider(id)) {
-            ui?.notifications?.error(`Token ${id} not riding ${this.id}`); // TODO localization
+            ui?.notifications?.error(getGame().i18n.format("MOUNTING.error.NotRounding"));
             return;
         }
 
@@ -264,7 +261,6 @@ export class MountData {
         let riderData = this.riders[index];
         riderData = RiderData.fromObject(riderData);
 
-        console.log(`${MODULE_ID} | Detaching token ${riderData.getToken().id} from ${this.id}`); // TODO localization
         await riderData.unsetFlags();
         await window['tokenAttacher'].detachElementFromToken(riderData.getToken(), this.getToken(), false);
         if (index >= 0) {
