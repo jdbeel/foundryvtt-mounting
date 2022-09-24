@@ -3,7 +3,7 @@ import { getCanvas, getGame, getToken } from './utils';
 
 import { MountData, RiderData } from './data';
 
-import { MODULE_ID } from './const';
+import { MODULE_ID, RIDER_PROPERTY_NAME } from './const';
 
 // This is used as a shim until foundry-vtt-types is updated to v10
 interface ShimTokenDocument extends TokenDocument {
@@ -15,7 +15,7 @@ export class Mounting {
     static ID = 'foundryvtt-mounting';
     dataMap = Map<string, MountData>;
 
-    static async mount(riderToken: Token | undefined) {
+    static async mount(riderToken: Token) {
         // In order to mount the user must select exactly two tokens.
         if (getCanvas().tokens?.controlled.length != 2) {
             ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.TwoNotSelected'));
@@ -46,20 +46,34 @@ export class Mounting {
         // @ts-ignore
         canvas?.tokens.children[0].children.unshift(mountToken);
 
-        let mountData = await MountData.fromTokenId(mountToken.id);
-        mountData.addRiderById(riderToken.id);
-        await mountData.update();
+        let mountData = MountData.fromTokenId(mountToken.id);
+        await mountData.addRiderById(riderToken.id);
     }
 
-    static async unmount(riderToken: Token | undefined) {
+    static async unmount(riderToken: Token) {
         if (riderToken == undefined) {
             ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.RiderTokenUndefined'));
             return;
         }
 
+        const riderData = RiderData.fromTokenId(riderToken.id);
+        if (riderData == undefined)
+            return; // TODO error
+        const mountTokenId = riderData.mountId;
+
+        if (mountTokenId == undefined) {
+            ui?.notifications?.error(getGame().i18n.format('MOUNTING.error.MountTokenUndefined'));
+            return;
+        }
+
+        let mountData = MountData.fromTokenId(mountTokenId);
+        if (mountData.hasRider(riderToken.id)) {
+           await mountData.removeRiderById(riderToken.id);
+        }
+
         const message = getGame().i18n.format(
             'MOUNTING.info.Dismount',
-            {rider_name: riderToken.name, mount_name: mountToken.name},
+            {rider_name: riderToken.name, mount_name: mountTokenId},
         );
         const chatData: ChatMessageDataConstructorData = {
             type: 4,
