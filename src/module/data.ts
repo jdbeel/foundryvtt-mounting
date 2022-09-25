@@ -90,12 +90,12 @@ export class RiderData {
     }
 
     async setFlags() {
-        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.SetFlagsRider", {id: this.id})}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format('MOUNTING.info.SetFlagsRider', { id: this.id })}`);
         await this.getToken().document.setFlag(MODULE_ID, RIDER_PROPERTY_NAME, this);
     }
 
     async unsetFlags() {
-        console.log(`${MODULE_ID} | ${getGame().i18n.format("MOUNTING.info.UnsetFlagsRider", {id: this.id})}`);
+        console.log(`${MODULE_ID} | ${getGame().i18n.format('MOUNTING.info.UnsetFlagsRider', { id: this.id })}`);
         await this.getToken().document.unsetFlag(MODULE_ID, RIDER_PROPERTY_NAME);
         await this.getToken().document.unsetFlag(TOKEN_ATTACHER_ID, 'offset');
     }
