@@ -3,5 +3,5 @@
 // SPDX-License-Identifier: MIT
 
 export function registerSettings(): void {
-  // Register any custom module settings here
+    // Register any custom module settings here
 }

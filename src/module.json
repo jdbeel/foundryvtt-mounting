@@ -1,50 +1,50 @@
 {
-  "id": "foundryvtt-mounting",
-  "title": "FoundryVTT Mounting",
-  "description": "Mounting",
-  "authors": [
-    {
-      "name": "Jacob Beel",
-      "email": "mounting+jacobdbeel@gmail.com",
-      "discord": ""
-    }
-  ],
-  "url": "This is auto replaced",
-  "license": "GNU-GPL v3",
-  "readme": "https://github.com/jdbeel/foundryvtt-mounting/blob/master/README.md",
-  "bugs": "https://github.com/jdbeel/foundryvtt-mounting/issues",
-  "changelog": "https://github.com/jdbeel/foundryvtt-mounting/releases",
-  "version": "This is auto replaced",
-  "compatibility": {
-    "minimum": "10",
-    "verified": "10"
-  },
-  "scripts": [],
-  "esmodules": ["module/foundryvtt-mounting.js"],
-  "styles": [],
-  "packs": [],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
-  ],
-  "relationships": {
-    "systems": [],
-    "requires": [],
-    "conflicts": []
-  },
-  "socket": false,
-  "manifest": "This is auto replaced",
-  "download": "This is auto replaced",
-  "library": false,
-  "dependencies": [
-    {
-      "name": "lib-wrapper"
+    "id": "foundryvtt-mounting",
+    "title": "FoundryVTT Mounting",
+    "description": "Mounting",
+    "authors": [
+        {
+            "name": "Jacob Beel",
+            "email": "mounting+jacobdbeel@gmail.com",
+            "discord": ""
+        }
+    ],
+    "url": "This is auto replaced",
+    "license": "GNU-GPL v3",
+    "readme": "https://github.com/jdbeel/foundryvtt-mounting/blob/master/README.md",
+    "bugs": "https://github.com/jdbeel/foundryvtt-mounting/issues",
+    "changelog": "https://github.com/jdbeel/foundryvtt-mounting/releases",
+    "version": "This is auto replaced",
+    "compatibility": {
+        "minimum": "10",
+        "verified": "10"
     },
-    {
-      "name": "token-attacher"
-    }
-  ]
+    "scripts": [],
+    "esmodules": ["module/foundryvtt-mounting.js"],
+    "styles": [],
+    "packs": [],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ],
+    "relationships": {
+        "systems": [],
+        "requires": [],
+        "conflicts": []
+    },
+    "socket": false,
+    "manifest": "This is auto replaced",
+    "download": "This is auto replaced",
+    "library": false,
+    "dependencies": [
+        {
+            "name": "lib-wrapper"
+        },
+        {
+            "name": "token-attacher"
+        }
+    ]
 }

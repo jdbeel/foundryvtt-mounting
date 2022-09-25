@@ -1,17 +1,25 @@
 {
-  "MOUNTING": {
-    "error": {
-      "TwoNotSelected": "Please select exactly two tokens and click the mount button on the token you wish to be the rider.",
-      "RiderTokenUndefined": "Rider token is undefined.",
-      "MountTokenUndefined": "Mount token is undefined.",
-      "MountUnsuccessful": "Rider token with ID: {rider_id} was unable to mount token with ID: {mount_id}.",
-      "DismountUnsuccessful": "Rider token with ID: {rider_id} was unable to dismount token with ID: {mount_id}."
-    },
-    "info": {
-      "Mount": "{rider_name} mounts {mount_name}.",
-      "Dismount": "{rider_name} dismounts {mount_name}.",
-      "MountTooltip": "Mount {rider_name} onto {mount_name}.",
-      "DismountTooltip": "Dismount {rider_name} from {mount_name}."
+    "MOUNTING": {
+        "error": {
+            "TwoNotSelected": "Please select exactly two tokens and click the mount button on the token you wish to be the rider.",
+            "RiderTokenUndefined": "Rider token is undefined.",
+            "MountTokenUndefined": "Mount token is undefined.",
+            "MountUnsuccessful": "Rider token with ID: {rider_id} was unable to mount token with ID: {mount_id}.",
+            "DismountUnsuccessful": "Rider token with ID: {rider_id} was unable to dismount token with ID: {mount_id}.",
+            "MountNotContain": "Mount has no token with id {id}.",
+            "AlreadyRiding": "Token is already riding this mount.",
+            "MountFull": "Mount is full.",
+            "NotRiding": "Token is not riding this mount."
+        },
+        "info": {
+            "Mount": "{rider_name} mounts {mount_name}.",
+            "Dismount": "{rider_name} dismounts {mount_name}.",
+            "MountTooltip": "Mount {rider_name} onto {mount_name}.",
+            "DismountTooltip": "Dismount {rider_name} from {mount_name}.",
+            "SetFlagsMount": "Setting flags for mount {id}.",
+            "SetFlagsRider": "Setting flags for rider {id}.",
+            "UnsetFlagsMount": "Unsetting flags for mount {id}.",
+            "UnsetFlagsRider": "Unsetting flags for rider {id}."
+        }
     }
-  }
 }
