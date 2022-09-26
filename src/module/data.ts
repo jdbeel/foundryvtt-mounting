@@ -217,7 +217,7 @@ export class MountData {
                     // @ts-ignore
                     await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken(), true);
                     // @ts-ignore
-                    await window['tokenAttacher'].setElementLockStatus(riderToken, false, true);
+                    await window['tokenAttacher'].setElementsLockStatus(riderToken, false, true);
                     // @ts-ignore
                     await window['tokenAttacher'].setElementsMoveConstrainedStatus(riderToken, true, true);
 

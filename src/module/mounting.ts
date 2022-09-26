@@ -38,7 +38,7 @@ export class Mounting {
         // @ts-ignore
         canvas?.tokens.children[0].children.splice(mountIndex, 1);
         // @ts-ignore
-        canvas?.tokens.children[0].children.push(mountToken);
+        canvas?.tokens.children[0].children.unshift(mountToken);
 
         const mountData = MountData.fromTokenId(mountToken.id);
         await mountData.addRiderById(riderToken.id);
