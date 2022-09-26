@@ -38,10 +38,24 @@ export class Mounting {
         // @ts-ignore
         canvas?.tokens.children[0].children.splice(mountIndex, 1);
         // @ts-ignore
-        canvas?.tokens.children[0].children.unshift(mountToken);
+        canvas?.tokens.children[0].children.push(mountToken);
 
         const mountData = MountData.fromTokenId(mountToken.id);
         await mountData.addRiderById(riderToken.id);
+
+        const message = getGame().i18n.format('MOUNTING.info.Mount', {
+            rider_name: riderToken.name,
+            mount_name: mountToken.name,
+        });
+        const chatData: ChatMessageDataConstructorData = {
+            type: 4,
+            user: getGame().user,
+            speaker: { alias: 'Mounting' },
+            content: message,
+            // whisper: [game.users.find((u) => u.isGM && u.active).id, game.user]
+        };
+        ChatMessage.create(chatData);
+        console.log(`${MODULE_ID} | ` + message);
     }
 
     static async unmount(riderToken: Token) {
@@ -66,7 +80,7 @@ export class Mounting {
 
         const message = getGame().i18n.format('MOUNTING.info.Dismount', {
             rider_name: riderToken.name,
-            mount_name: mountTokenId,
+            mount_name: mountData.getToken().name,
         });
         const chatData: ChatMessageDataConstructorData = {
             type: 4,
