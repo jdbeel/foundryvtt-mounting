@@ -31,20 +31,27 @@
         }
     ],
     "relationships": {
-        "systems": [],
-        "requires": [],
-        "conflicts": []
+        "requires": [
+            {
+                "id": "lib-wrapper",
+                "type": "module",
+                "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json"
+            },
+            {
+                "id": "token-attacher",
+                "type": "module",
+                "manifest": "https://raw.githubusercontent.com/KayelGee/token-attacher/master/module.json"
+            },
+            {
+                "id": "token-z",
+                "type": "module",
+                "manifest": "https://github.com/theripper93/token-z/releases/latest/download/module.json"
+            }
+        ]
     },
     "socket": false,
     "manifest": "This is auto replaced",
     "download": "This is auto replaced",
     "library": false,
-    "dependencies": [
-        {
-            "name": "lib-wrapper"
-        },
-        {
-            "name": "token-attacher"
-        }
-    ]
+    "dependencies": []
 }

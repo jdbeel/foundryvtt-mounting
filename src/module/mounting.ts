@@ -3,7 +3,7 @@ import { getCanvas, getGame } from './utils';
 
 import { MountData, RiderData } from './data';
 
-import { MODULE_ID } from './const';
+import { MODULE_ID, TOKEN_Z_ID } from './const';
 
 export class Mounting {
     static ID = 'foundryvtt-mounting';
@@ -29,16 +29,8 @@ export class Mounting {
             return;
         }
 
-        // Push token to front of token "stack"
-        // This makes some fairly heavy assumptions. There has to be a better practice here...
-
-        // Code shamlessly borrowed from: https://github.com/David-Zvekic/pushTokenBack/blob/main/pushTokenBack.js#L61
-        // @ts-ignore
-        const mountIndex = getCanvas().tokens?.children[0].children.findIndex((t) => t.id == mountToken.id);
-        // @ts-ignore
-        canvas?.tokens.children[0].children.splice(mountIndex, 1);
-        // @ts-ignore
-        canvas?.tokens.children[0].children.unshift(mountToken);
+        if (!hasProperty(mountToken.document, `flags.${TOKEN_Z_ID}.zIndex`))
+            await mountToken.document.setFlag(TOKEN_Z_ID, 'zIndex', -1);
 
         const mountData = MountData.fromTokenId(mountToken.id);
         await mountData.addRiderById(riderToken.id);
