@@ -216,6 +216,10 @@ export class MountData {
 
                     // @ts-ignore
                     await window['tokenAttacher'].attachElementToToken(riderToken, this.getToken(), true);
+                    // @ts-ignore
+                    await window['tokenAttacher'].setElementLockStatus(riderToken, false, true);
+                    // @ts-ignore
+                    await window['tokenAttacher'].setElementsMoveConstrainedStatus(riderToken, true, true);
 
                     const oldOffset = riderToken.document.getFlag(TOKEN_ATTACHER_ID, 'offset') as Record<
                         string,
